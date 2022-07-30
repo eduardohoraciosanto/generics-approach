@@ -34,6 +34,16 @@ func PrintNameWithError(name string) error {
 	return fmt.Errorf("not yet")
 }
 
+var timesSumCalled = 0
+
+func SumTwoIntegers(a, b int) (int, error) {
+	timesSumCalled++
+	if timesSumCalled >= 5 {
+		return a + b, nil
+	}
+	return 0, fmt.Errorf("not yet")
+}
+
 func main() {
 	fn := func() error {
 		return PrintNameWithError("edu")
@@ -41,7 +51,24 @@ func main() {
 
 	res := Retrier(fn, 7, 1000)
 	if res {
-		fmt.Println("Success")
+		fmt.Println("Success Calling PrintNameWithError")
+	} else {
+		fmt.Println("Failed")
+	}
+
+	//when using the old way... any func can be used as long as it returns an error
+	fn2 := func() error {
+		result, err := SumTwoIntegers(1, 2)
+		if err == nil {
+			fmt.Println("The result is: ", result)
+			return nil
+		}
+		return err
+	}
+
+	res = Retrier(fn2, 7, 1000)
+	if res {
+		fmt.Println("Success calling SumTwoIntegers")
 	} else {
 		fmt.Println("Failed")
 	}
